@@ -1,0 +1,48 @@
+---
+title: "toolik_chem"
+author: "Jake Eisaguirre"
+date: "8/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+Toolik_biochem <- read_csv(here::here("data", "2011_Kling_Akchem.csv"), na= ".") %>% 
+  janitor::clean_names()
+
+```
+
+```{r}
+
+inlet_biochem <- Toolik_biochem %>% 
+  filter(site %in% c("Toolik Inlet", "Toolik inlet")) %>% 
+  select("p_h", "doc_u_m", "tdn_u_m")
+
+Means <- inlet_biochem %>% 
+  summarise(pH_mean = mean(p_h, na.rm = TRUE),
+            DOC_mean = mean(doc_u_m, na.rm = TRUE),
+            TDN_mean = mean (tdn_u_m, na.rm = TRUE))
+View(Means)
+
+
+mean_biochem <- vector(mode = "numeric", length = ncol(inlet_biochem))
+
+for (i in seq_along(inlet_biochem)){
+  mean_val <- mean(inlet_biochem[[i]], na.rm = TRUE)
+  mean_biochem[i] = mean_val
+}
+
+mean_biochem
+
+apply(inlet_biochem, 2, mean, na.rm = TRUE)
+
+map_df(inlet_biochem, mean, na.rm = TRUE)
+
+```
+
